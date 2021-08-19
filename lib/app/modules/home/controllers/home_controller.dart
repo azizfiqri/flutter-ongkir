@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:ongkir/app/data/user_model.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController
+  var ishidden = true.obs;
+  var kodeGerbang = 0.obs;
 
   final count = 0.obs;
   @override
