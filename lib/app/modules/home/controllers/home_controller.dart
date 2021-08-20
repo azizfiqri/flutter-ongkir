@@ -6,6 +6,7 @@ import 'package:ongkir/app/data/user_model.dart';
 class HomeController extends GetxController {
   var ishidden = true.obs;
   var kodeGerbang = 0.obs;
+  var nppPetugas = 0.obs;
 
   final count = 0.obs;
   @override

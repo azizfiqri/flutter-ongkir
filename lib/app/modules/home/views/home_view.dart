@@ -1,15 +1,12 @@
-import 'dart:convert';
-
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
-import 'package:ongkir/app/data/listgardu_model.dart';
-import 'package:ongkir/app/data/listgerbang_model.dart';
-
+import 'package:ongkir/app/modules/home/views/widgets/gardu.dart';
+import 'package:ongkir/app/modules/home/views/widgets/gerbang.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
+  final cssFieldController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,6 +18,13 @@ class HomeView extends GetView<HomeController> {
         child: ListView(
           padding: EdgeInsets.all(20),
           children: [
+            nppPetugas(cssFieldController: cssFieldController),
+            SizedBox(
+              height: 5.0,
+            ),
+            Obx(() => Text("Nama Gerbang : ${controller.nppPetugas.value}")),
+            Text("Petugas CSS :"),
+            Text("Petugas CS :"),
             gerbangWidget(),
             Obx(
               () => controller.ishidden.isTrue
@@ -34,133 +38,42 @@ class HomeView extends GetView<HomeController> {
   }
 }
 
-class gerbangWidget extends GetView<HomeController> {
-  const gerbangWidget({
+class nppPetugas extends GetView<HomeController> {
+  const nppPetugas({
     Key? key,
+    required this.cssFieldController,
   }) : super(key: key);
+
+  final TextEditingController cssFieldController;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: DropdownSearch<ListGerbang>(
-        mode: Mode.DIALOG,
-        showClearButton: true,
-        label: "Nama Gerbang",
-        onFind: (String filter) async {
-          Uri url =
-              Uri.parse("http://36.92.153.53:88/jm_opsNew/main/gerbang_all");
-          var response = await http.post(
-            url,
-            body: {
-              "npp_no": "151700",
-              "gerbang": "32",
-            },
-          );
-          var data = json.decode(response.body) as Map<String, dynamic>;
-
-          var listAllGerbang = data['data']['gerbang'] as List<dynamic>;
-
-          var models = ListGerbang.fromJsonList(listAllGerbang);
-          return models;
-        },
-        onChanged: (gerbang) {
-          if (gerbang != null) {
-            controller.ishidden.value = false;
-            controller.kodeGerbang.value = int.parse(gerbang.gerbangId!);
-            print(gerbang.gerbangId);
-          } else {
-            controller.ishidden.value = true;
-            controller.kodeGerbang.value = 0;
-          }
-        },
-        showSearchBox: true,
-        searchBoxDecoration: InputDecoration(
-          hintText: "cari gerbang . . .",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+    return TextFormField(
+      onChanged: (value) {
+        if (value != null) {
+          controller.nppPetugas.value = int.parse(value);
+          print(controller.nppPetugas.value);
+        } else {
+          print("kosong");
+        }
+        ;
+      },
+      maxLength: 40,
+      cursorColor: Colors.green,
+      controller: cssFieldController,
+      decoration: InputDecoration(
+        // hintText: "Tulis Pesan",
+        labelText: "NPP Petugas ...",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(
+            color: Colors.green,
+            width: 2.0,
           ),
         ),
-        popupItemBuilder: (context, item, isSelected) {
-          return Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 5,
-            ),
-            child: Text(
-              "${item.gerbangNama}",
-              style: TextStyle(fontSize: 18),
-            ),
-          );
-        },
-        itemAsString: (item) => item.gerbangNama!,
-      ),
-    );
-  }
-}
-
-class garduWidget extends GetView<HomeController> {
-  const garduWidget({
-    Key? key,
-    required this.gerbangId,
-  }) : super(key: key);
-
-  final int gerbangId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: DropdownSearch<ListGardu>(
-        mode: Mode.DIALOG,
-        showClearButton: true,
-        label: "Nomor Gardu",
-        onFind: (String filter) async {
-          Uri url =
-              Uri.parse("http://36.92.153.53:88/jm_opsNew/main/monitoring");
-          var response = await http.post(
-            url,
-            body: {
-              "gerbang": "${controller.kodeGerbang.value}",
-              "npp_no": "151700",
-              "tgl": "2021-03-19",
-            },
-          );
-          var data = json.decode(response.body) as Map<String, dynamic>;
-
-          var listAllGerbang = data['data'] as List<dynamic>;
-
-          var models = ListGardu.fromJsonList(listAllGerbang);
-          return models;
-        },
-        onChanged: (gardu) {
-          if (gardu != null) {
-            print(controller.ishidden.value);
-            print(gardu.garduId);
-          } else {
-            print('Tidak memilih data');
-          }
-        },
-        showSearchBox: true,
-        searchBoxDecoration: InputDecoration(
-          hintText: "cari gardu . . .",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        popupItemBuilder: (context, item, isSelected) {
-          return Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 5,
-            ),
-            child: Text(
-              "${item.garduNama}",
-              style: TextStyle(fontSize: 18),
-            ),
-          );
-        },
-        itemAsString: (item) => item.garduNama!,
       ),
     );
   }
