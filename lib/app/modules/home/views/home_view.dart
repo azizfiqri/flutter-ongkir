@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ongkir/app/modules/home/views/widgets/date.dart';
 import 'package:ongkir/app/modules/home/views/widgets/gardu.dart';
 import 'package:ongkir/app/modules/home/views/widgets/gerbang.dart';
 import 'package:ongkir/app/modules/home/views/widgets/petugas.dart';
@@ -26,12 +27,17 @@ class HomeView extends GetView<HomeController> {
               () => Text("Kode Gardu : ${controller.kodeGardu.value}"),
             ),
             Obx(
-              () => Text("Kode Gardu : ${controller.ipPCS.value}"),
+              () => Text("IP PCS : ${controller.ipPCS.value}"),
+            ),
+            Obx(
+              () => Text(
+                  "Tanggal Bertugas : ${controller.tahun.value}-${controller.tanggal.value}-${controller.hari.value}"),
             ),
             SizedBox(
               height: 20,
             ),
             nppPetugas(),
+            datePicker(),
             gerbangWidget(),
             SizedBox(
               height: 5.0,
@@ -49,7 +55,7 @@ class HomeView extends GetView<HomeController> {
                   child: Text('Open ALB'),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () => controller.reqEOP(),
                   child: Text('Req EOP'),
                 ),
               ],
