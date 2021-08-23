@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:ongkir/app/data/user_model.dart';
+import 'package:ongkir/app/modules/home/views/widgets/ipPCS.dart';
 
 class HomeController extends GetxController {
   var ishidden = true.obs;
-  var kodeGerbang = 0.obs;
-  var kodeGardu = 0.obs;
+  var ishiddenNPPPetugas = true.obs;
+  var kodeGerbang = "".obs;
+  var kodeGardu = "".obs;
   var ipPCS = "".obs;
   var namaGerbang = "".obs;
   var nppPetugas = 0.obs;
@@ -16,12 +19,13 @@ class HomeController extends GetxController {
   var tahun = "".obs;
 
   late TextEditingController nppC;
+  late TextEditingController ipPCSC;
   late TextEditingController hariC;
   late TextEditingController bulanC;
   late TextEditingController tahunC;
 
   void getNamaGerbang() async {
-    Uri url = Uri.parse("http://36.92.153.53:88/jm_opsNew/main/login");
+    Uri url = Uri.parse("http://${ipPCS.value}/jago_api/main/login");
     try {
       final response = await http.post(
         url,
@@ -33,7 +37,7 @@ class HomeController extends GetxController {
       var namagerbang = json.decode(response.body)["data"]["gerbang_nama"];
       namaGerbang.value = namagerbang;
       var kodefikasigerbang = json.decode(response.body)["data"]["gerbang_id"];
-      kodeGerbang.value = int.parse(kodefikasigerbang);
+      kodeGerbang.value = kodefikasigerbang;
       if (kodefikasigerbang != null) {
         ishidden.value = false;
       } else {
@@ -49,9 +53,11 @@ class HomeController extends GetxController {
     }
   }
 
+  void upabIPPCS() {}
+
   void openALB() async {
     print(nppPetugas);
-    Uri url = Uri.parse("http://36.92.153.53:88/jm_opsNew/main/req_alb");
+    Uri url = Uri.parse("http://${ipPCS.value}/jago_api/main/req_alb");
     try {
       final response = await http.post(
         url,
@@ -64,11 +70,18 @@ class HomeController extends GetxController {
       );
 
       var data = json.decode(response.body) as Map<String, dynamic>;
+      print(data);
       var statusCode = data["status"];
+      print(statusCode);
       if (statusCode != "true") {
         Get.defaultDialog(
-          title: "Error",
-          middleText: data["data"],
+          title: "Success",
+          middleText: data["data"]["message"],
+        );
+      } else {
+        Get.defaultDialog(
+          title: "Gagal",
+          middleText: data["status"][1],
         );
       }
     } catch (err) {
@@ -81,7 +94,7 @@ class HomeController extends GetxController {
   }
 
   void reqEOP() async {
-    Uri url = Uri.parse("http://36.92.153.53:88/jm_opsNew/main/req_eop");
+    Uri url = Uri.parse("http://${ipPCS.value}/jago_api/main/req_eop");
     try {
       final response = await http.post(
         url,
@@ -114,6 +127,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     nppC = TextEditingController();
+    ipPCSC = TextEditingController();
     hariC = TextEditingController(text: "01");
     bulanC = TextEditingController(text: "01");
     tahunC = TextEditingController(text: "2020");
@@ -128,6 +142,7 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     nppC.dispose();
+    ipPCSC.dispose();
     super.onClose();
   }
 }

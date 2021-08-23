@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ongkir/app/modules/home/views/navbar.dart';
 import 'package:ongkir/app/modules/home/views/widgets/date.dart';
 import 'package:ongkir/app/modules/home/views/widgets/gardu.dart';
 import 'package:ongkir/app/modules/home/views/widgets/gerbang.dart';
+import 'package:ongkir/app/modules/home/views/widgets/ipPCS.dart';
 import 'package:ongkir/app/modules/home/views/widgets/petugas.dart';
 import '../controllers/home_controller.dart';
 
@@ -13,7 +15,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sikong'),
+        title: Text('Sistem Kontrol Gerbang'),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -27,18 +29,20 @@ class HomeView extends GetView<HomeController> {
               () => Text("Kode Gardu : ${controller.kodeGardu.value}"),
             ),
             Obx(
-              () => Text("IP PCS : ${controller.ipPCS.value}"),
-            ),
-            Obx(
               () => Text(
                   "Tanggal Bertugas : ${controller.tahun.value}-${controller.tanggal.value}-${controller.hari.value}"),
             ),
             SizedBox(
               height: 20,
             ),
-            nppPetugas(),
+            ipPCS(),
+            Obx(
+              () => controller.ishiddenNPPPetugas.isTrue
+                  ? SizedBox()
+                  : nppPetugas(),
+            ),
             datePicker(),
-            gerbangWidget(),
+            // gerbangWidget(),
             SizedBox(
               height: 5.0,
             ),
